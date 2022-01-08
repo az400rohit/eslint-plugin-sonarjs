@@ -37,6 +37,7 @@ steps:
      sonar.tests=tests
      sonar.javascript.lcov.reportsPaths=coverage/lcov.info
      sonar.testExecutionReportPaths=test-report.xml
+     sonar.exclusions="**/bin/**/*,**/obj/**/*,**/Migrations/**,**/*.dll"
     
 - task: PublishTestResults@2
   inputs:
