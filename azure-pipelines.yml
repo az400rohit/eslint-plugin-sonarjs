@@ -20,7 +20,7 @@ steps:
     npm run build
     yarn install
     yarn build
-    yarn test --coverage --testresultsProcessor jest-sonar-reporter
+    yarn test --coverage --testResultsProcessor jest-sonar-reporter
   displayName: 'npm install and build'
 
 - task: SonarCloudPrepare@1
