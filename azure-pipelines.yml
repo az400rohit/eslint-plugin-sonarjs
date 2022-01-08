@@ -1,0 +1,58 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+    yarn install
+    yarn build
+    yarn test --coverage --testresultProcessor jest-sonar-reporter
+  displayName: 'npm install and build'
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'New'
+    organization: 'az400dec13rohit'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'az400dec13rohit_Nodejs1.0'
+    cliProjectName: 'Nodejs1.0'
+    cliSources: '.'
+    extraProperties: 
+     sonar.source=src
+     sonar.tests=tests
+     sonar.javascript.lcov.reportsPaths=coverage/lcov.info
+     sonar.testExecutionReportPaths=test-report.xml
+    
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/TEST-*.xml'
+    
+- task: PublishCodeCoverageResults@1
+  inputs: 
+    codeCoverageTool: Cobertura # or JaCoCo
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
+
+
+- task: SonarCloudAnalyze@1
+  displayName: "Run Code Analysis"
+
+- task: SonarCloudPublish@1
+  displayName: "Publish Quality Gate Result"
+
